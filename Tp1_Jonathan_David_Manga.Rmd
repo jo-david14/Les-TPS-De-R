@@ -1,0 +1,262 @@
+---
+title: "Tp1_Jonathan_David_Manga"
+author: "MDJ_007"
+date: "`r Sys.Date()`"
+fontsize: 16pt
+output: 
+  pdf_document:
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\section{Exercie 1}
+
+\subsection*{question1}
+\begin{center}
+\scalebox{1.3}{ 
+  \begin{tabular}{|l|p{3cm}|p{3cm}|p{5cm}|}
+  \hline
+    \textbf{Variable} & \textbf{Type} & \textbf{Mode} \\
+    \hline
+    x & Vecteur numerique & Integer\footnotemark \\
+    \hline
+    y & vecteur logique & logical\\ 
+    \hline
+    z & Vecteur Texte & character\\
+    \hline
+    w & liste & list\\
+    \hline
+  \end{tabular}
+  
+}
+\end{center}
+\footnotetext{stocke neanmoins comme Double}
+
+\subsection*{question 2}
+
+Pour le premier cas x+y
+
+R va transformer le vecteur y en numerique avec \textbf{TRUE =1 et FALSE = 0}
+
+le resultat final est le vecteur :
+
+```{r eval=FALSE}
+resultat <- c(2,2,4)
+```
+
+Pour le second cas x + z
+Le resultat est une erreur 
+
+Pour le troisieme cas R transforme le vecteur z en numeric des lors nous avons une addition 
+
+le resultat est :
+
+```{r eval=FALSE}
+resultat <- c(5,7,9)
+```
+Pour le quatrieme cas :
+
+La fonction unlist(w) aplatit la liste en un vecteur. À cause de la présence de "2" (texte) dans la liste, R transforme tout le contenu de w en texte lors de l'aplatissement.
+On retombe sur le cas Vecteur texte + Vecteur réel, ce qui provoque une erreur.
+
+\subsection*{question 3 et 4}
+
+\begin{tabular}{|l|p{3cm}|p{3cm}|p{5cm}|}
+\hline
+\textbf{Expression} & \textbf{Coercition implicite ?} & \textbf{Type cible} & \textbf{Logique de conversion mobilisée} \\
+\hline
+$x + y$ & \textbf{OUI} & \texttt{double} (Réel) & R transforme les logiques en nombres (\texttt{TRUE}=1, \texttt{FALSE}=0) pour permettre l'opération arithmétique. \\
+\hline
+$x + z$ & \textbf{NON} (Erreur) & Aucun & R refuse de transformer implicitement du texte en nombre pour une addition. \\
+\hline
+$as.numeric(z) + x$ & \textbf{NON} (Explicite) & \texttt{double} (Réel) & La conversion est forcée par l'utilisateur. R additionne ensuite deux vecteurs de même type. \\
+\hline
+$unlist(w) + x$ & \textbf{OUI} & \texttt{character} (Texte) & Pour créer un vecteur à partir d'une liste hétérogène, R contraint tous les éléments vers le type le plus flexible (le texte). \\
+\hline
+\end{tabular}
+
+\subsection*{question 5}
+Executer ce code menera a une erreur. Les valeurs tels que "10" et "20" seront remplaces par leur equivalent numerique. Cependant Tenter de transformer le "A" menera a une erreur :Le "A" sera remplace par un NA
+
+
+
+\subsection*{question 6}
+
+
+```{r eval=FALSE}
+
+
+# On propose le vecteur et l'operation a effectue et on utilise 
+#la fonction wich combine avec is.Na()
+
+
+#Par exemple 
+
+
+# Le vecteur à tester
+v <- c("10", "A", "20")
+
+# 1. On tente la conversion
+v_num <- as.numeric(v)
+
+# 2. On détecte les indices qui sont devenus NA à cause de la conversion
+# (en excluant les NA qui étaient déjà peut-être là)
+problemes <- which(is.na(v_num) & !is.na(v))
+
+# 3. Test de robustesse
+if(length(problemes) > 0) {
+  print("Attention : Des données non numériques ont été détectées !")
+  print(paste("Éléments fautifs :", v[problemes]))
+} else {
+  print("Conversion réussie : toutes les données sont numériques.")
+}
+
+```
+
+\section{Exercice 2}
+
+\subsection*{question1}
+\begin{center}
+
+  \begin{tabular}{|l|p{3cm}|p{3cm}}
+  \hline
+    \textbf{Colonne} & \textbf{Type}  \\
+    \hline
+    A & Vecteur numerique \\
+    \hline
+    B & vecteur texte\\ 
+    \hline
+    C & Vecteur logique \\
+    \hline
+    
+  \end{tabular}
+  
+\subsection*{question 2} 
+Il s'agit du dataframe ici chaque colonne peut avoir un type different . C'est semblable  a un tableau sur une population de 3 individus avec 3 caracteres
+
+\subsection*{question 3 et 4}
+Ce qu'il va se passer c'est que R va tout transformer dans le type dominant qui ici s'agit de character . Pour une matrice en effet toutes les colonnes doivent etre de meme type c'est la principale difference de comportement 
+
+comme le montre le code ci dessous
+```{r echo=TRUE}
+A <- c(1, 2, 3)
+B <- c("a", "b", "c")
+C <- c(TRUE, FALSE, TRUE)
+D <- data.frame(A, B, C)
+as.matrix(D)
+
+typeof(as.matrix(D))
+```
+
+\subsection*{Question 5}
+Lorsque l'on va tranformer on pourra plus faire les operations naturels les transformation de variable vu que tout est en texte . Certains graphiques ne pourront plus etre effectue  notamment ceux sur le variables continues
+
+\subsection*{question 6}
+Sans pour autant modifier le type on peut appliquer un filtre sur les colonnes
+
+```{r eval=FALSE}
+# On définit le filtre : "Est-ce que la colonne est numérique ?"
+mon_filtre <- sapply(df, is.numeric)
+#colonne logique
+mon_filtre2 <- sapply(df,is.logical)
+#colonne de texte
+mon_filtre3 <- sapply(df,is.character)
+# On applique le filtre sur les colonnes (après la virgule)
+df_propre <- df[, mon_filtre]
+```
+
+
+
+\section{Exercice 3}
+
+
+\subsection*{Question 1}
+Pour respecter la hiérarchie logique, on définit les \textit{levels} explicitement :
+```{r eval=FALSE}
+niveau <- factor(niveau, levels = c("faible", "moyen", "élevé"), ordered = TRUE)
+```
+
+\subsection*{Question 2}
+R stocke les facteurs sous forme d'entiers. Ici : \textbf{faible = 1, moyen = 2, élevé = 3}. Le vecteur interne est donc $(1, 2, 3, 2, 1)$.
+
+\subsection*{Question 3}
+
+L'instruction \texttt{as.numeric(niveau)} est dangereuse car elle retourne les codes d'indexation internes (1, 2, 3) et non les valeurs réelles. Dans une analyse, cela peut conduire à traiter des rangs arbitraires comme des grandeurs mathématiques, faussant ainsi les calculs de moyenne ou de corrélation.
+
+\subsection*{question 5}
+Cette operation n'a pas de sens on effectue en general la moyenne sur plusieurs valeurs ici l'operation va juste extraire 300 et calculer la moyrnnr dessus ce qui nous redonne le meme nombre . 
+
+\subsection*{question6}
+
+Si ils sont mal ordonnes on aura des difficultes dans l'analyse notemment dans un graphique en barre qui va representer une information fausse. 
+
+
+\section{Exercice 4}
+```{r eval=FALSE}
+# Création de la cohorte d'étudiants 
+cohorte <- data.frame(
+  id = c(101, 102, 103, 104, 105),
+  
+  # Conversion appropriée des variables qualitatives (Facteurs)
+  sexe = factor(c("M", "F", "F", "M", "F")),
+  filiere = factor(c("ISEP", "ISE", "AS", "ISEP", "ISE")),
+  
+  # Typage explicite des variables numériques
+  s1 = c(14.5, 12.0, 15.2, 10.8, 15), 
+  s2 = c(13.0, 11.5, 18, 12.4, 14.0),
+   
+  boursier = c(TRUE, FALSE, TRUE, TRUE, FALSE), # Logique
+   
+  # Gestion des valeurs manquantes pour la région
+  region = c("Dakar", "Thiès", NA, "Saint-Louis", "Dakar")
+)
+cohorte$id <- factor(cohorte$id)
+```
+\subsection*{question2}
+```{r eval=FALSE}
+cohorte$moyenne_annuelle <- rowMeans(cohorte[, c("s1", "s2")])
+```
+
+\subsection*{question3}
+```{r eval=FALSE}
+cohorte$decision <- ifelse(cohorte$moyenne_annuelle >= 12, "Admis", "Ajourné")
+
+
+cohorte$decision <- factor(cohorte$decision)
+```
+\subsection*{question4}
+On pourrait penser a transformer la variable filiere en factor car il existe un lien logique entre ISEP et ISE . Cependant tel n'est pas le cas avec AS . C'est une filiere independante des deux autres. Du coup il n'est vraiment pas necessaire de le faire.
+
+\subsection*{question 5}
+
+L'analyse de la structure confirme un typage rigoureux : les variables qualitatives (id, sexe, filière, décision) sont traitées en facteurs, tandis que les moyennes conservent leur format numérique (num). La cohérence est totale, car chaque identifiant est unique et les statuts de réussite valident strictement la règle des 12 points. L'unique anomalie identifiée est une donnée manquante (NA) pour la région, ce qui ne compromet pas la fiabilité des calculs statistiques.
+
+
+```{r eval=FALSE}
+summary(cohorte)
+str(cohorte)
+```
+
+\subsection*{question6}
+
+```{r eval=FALSE}
+# 1. Contrôle des types (on vérifie si des colonnes numériques ont des problèmes)
+type_check <- !is.numeric(cohorte$s1) | !is.numeric(cohorte$s2)
+
+# 2. Détection des notes aberrantes (hors 0-20)
+aberrantes <- which(cohorte$s1 < 0 | cohorte$s1 > 20 | cohorte$s2 < 0 | cohorte$s2 > 20)
+
+# 3. Détection des NA critiques (ID ou Moyenne manquante)
+na_critiques <- which(is.na(cohorte$id) | is.na(cohorte$moyenne_annuelle))
+
+# Affichage des alertes
+if(length(aberrantes) > 0) print(paste("Note aberrante à la ligne :", aberrantes))
+if(length(na_critiques) > 0) print(paste("Donnée critique manquante à la ligne :", na_critiques))
+```
+
+
+\subsection*{question 7}
+Le choix du type double pour les moyennes est idéal pour la régression linéaire, car il permet de traiter ces variables de manière continue sans perte de précision mathématique. N'ayant  encore qu'une comprehension superficielle de l'analyse factorielle je ne trouve pas encore l'importance du typage ici.
