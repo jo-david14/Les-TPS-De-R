@@ -260,3 +260,46 @@ if(length(na_critiques) > 0) print(paste("Donnée critique manquante à la ligne
 
 \subsection*{question 7}
 Le choix du type double pour les moyennes est idéal pour la régression linéaire, car il permet de traiter ces variables de manière continue sans perte de précision mathématique. N'ayant  encore qu'une comprehension superficielle de l'analyse factorielle je ne trouve pas encore l'importance du typage ici.
+
+
+\subsection*{question du cours precedent}
+
+
+
+```{r eval=TRUE}
+# 1. La matrice à diagonaliser
+A <- matrix(c(4, 1, 2, 3), 2, 2, byrow = TRUE)
+
+# 2. Valeurs propres (Calcul du discriminant de det(A - lambda*I) = 0)
+# Pour une matrice [[a, b], [c, d]], le polynôme est : lambda^2 - Tr(A)lambda + det(A)
+tr_A <- sum(diag(A))
+det_A <- det(A)
+
+# Résolution de : lambda^2 - tr_A*lambda + det_A = 0
+delta <- tr_A^2 - 4 * det_A
+val_propres <- c((tr_A + sqrt(delta)) / 2, (tr_A - sqrt(delta)) / 2)
+
+# 3. Vecteurs propres (Résolution de (A - lambda*I)X = 0)
+# Pour chaque lambda, on cherche X = (x1, x2) tel que (a-lambda)x1 + b*x2 = 0
+trouver_vecteur <- function(lambda, mat) {
+  M <- mat - diag(lambda, nrow(mat))
+  # On fixe arbitrairement x2 = 1 et on déduit x1 (si b != 0)
+  # (a-lambda)x1 + b*1 = 0  => x1 = -b / (a-lambda)
+  x1 <- -M[1,2] / M[1,1]
+  v <- c(x1, 1)
+  return(v / sqrt(sum(v^2))) # Normalisation
+}
+
+v1 <- trouver_vecteur(val_propres[1], A)
+v2 <- trouver_vecteur(val_propres[2], A)
+
+# 4. Reconstruction
+P <- cbind(v1, v2)
+D <- diag(val_propres)
+
+print("Valeurs propres :")
+print(val_propres)
+print("Matrice de passage P :")
+print(P)
+```
+
